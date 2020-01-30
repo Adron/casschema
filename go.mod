@@ -1,4 +1,4 @@
-module github.com/adron/cassandraschema
+module github.com/adron/cassschema
 
 go 1.13
 
