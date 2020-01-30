@@ -1,4 +1,4 @@
-module github.com/adron/cassschema
+module github.com/adron/casschema
 
 go 1.13
 
