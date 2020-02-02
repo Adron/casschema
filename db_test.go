@@ -13,6 +13,16 @@ func detailsForTests()AuthDetails {
 	}
 }
 
+func TestContainsClearsWhitespace(t *testing.T) {
+	thisShouldExist := "some_stuff"
+	var whatShouldBeCompared []string
+	whatShouldBeCompared = append(whatShouldBeCompared, "     some_stuff   ")
+	whatShouldBeCompared = append(whatShouldBeCompared,  " some_other_thing  ")
+	if !Contains(whatShouldBeCompared, thisShouldExist) {
+		t.Errorf("It broke, it appears things are trimming correctly and comparing.")
+	}
+}
+
 func TestBuildClusterSchemaIgnoresTables(t *testing.T) {
 	var ignoreList []string
 	ignoreList = append(ignoreList, "system_schema")

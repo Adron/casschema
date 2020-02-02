@@ -3,6 +3,7 @@ package cassandraschema
 import (
 	"github.com/gocql/gocql"
 	"log"
+	"strings"
 )
 
 func GetSession(hosts string, username string, password string) *gocql.Session {
@@ -21,10 +22,9 @@ func errorTrapIterable(iter *gocql.Iter) {
 
 func Contains(a []string, x string) bool {
 	for _, n := range a {
-		if x == n {
+		if strings.Trim(x, " ") == strings.Trim(n, " ") {
 			return true
 		}
 	}
 	return false
 }
-

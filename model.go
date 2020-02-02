@@ -35,4 +35,3 @@ type AuthDetails struct {
 	Username string
 	Password string
 }
-
