@@ -1,4 +1,4 @@
-# What's This "Database" Folder About?!
+# What's This "Testing" Folder About?!
 
 To run tests for this application, I've decided that I'd set them to run as integration
 tests against an Apache Cassandra node running at localhost. I'm using Docker but you could
