@@ -13,6 +13,48 @@ func detailsForTests()AuthDetails {
 	}
 }
 
+func TestBuildClusterSchemaIgnoresTables(t *testing.T) {
+	var ignoreList []string
+	ignoreList = append(ignoreList, "system_schema")
+	ignoreList = append(ignoreList, "system_traces")
+	ignoreList = append(ignoreList, "system_auth")
+	ignoreList = append(ignoreList, "system_distributed")
+	ignoreList = append(ignoreList, "system")
+	databaseCluster := BuildClusterSchema(detailsForTests(),ignoreList)
+	foundIgnoreKeyspace := false
+
+	for _, keySpace := range databaseCluster.Keyspaces {
+		for _, ignoreName := range ignoreList {
+			if keySpace.Name == ignoreName {
+				foundIgnoreKeyspace = true
+			}
+		}
+	}
+
+	if foundIgnoreKeyspace {
+		t.Errorf("It wasn't ignored, something is amiss, fix the processing?")
+	}
+}
+
+func TestBuildClusterSchemaIgnoresTable(t *testing.T) {
+	var ignoreList []string
+	ignoreList = append(ignoreList, "system_schema")
+	databaseCluster := BuildClusterSchema(detailsForTests(),ignoreList)
+	foundIgnoreKeyspace := false
+
+	for _, keySpace := range databaseCluster.Keyspaces {
+		for _, ignoreName := range ignoreList {
+			if keySpace.Name == ignoreName {
+				foundIgnoreKeyspace = true
+			}
+		}
+	}
+
+	if foundIgnoreKeyspace {
+		t.Errorf("It wasn't ignored, something is amiss, fix the processing?")
+	}
+}
+
 func TestBuildClusterSchema(t *testing.T) {
 	var ignoreList []string
 	databaseCluster := BuildClusterSchema(detailsForTests(),ignoreList)
