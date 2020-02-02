@@ -5,29 +5,45 @@ import (
 	"testing"
 )
 
+func detailsForTests()AuthDetails {
+	return AuthDetails{
+		Hosts:    "localhost",
+		Username: "cassandra",
+		Password: "cassandra",
+	}
+}
+
+func TestBuildClusterSchema(t *testing.T) {
+	var ignoreList []string
+	databaseCluster := BuildClusterSchema(detailsForTests(),ignoreList)
+	if len(databaseCluster.Keyspaces) == 0 || len(databaseCluster.Keyspaces[0].CassandraTables) == 0 {
+		t.Errorf("Well, something is amiss, did you setup the testing database?")
+	}
+}
+
 func TestGetColumns(t *testing.T) {
-	columns := GetColumns("localhost", "cassandra", "cassandra")
+	columns := GetColumns(detailsForTests())
 	if 1 > len(columns){
 		t.Errorf("No columns found, yup, this is terribly wrong too! Is there even a databass?")
 	}
 }
 
 func TestGetTables(t *testing.T) {
-	tables := GetTables("localhost", "cassandra", "cassandra")
+	tables := GetTables(detailsForTests())
 	if 1 > len(tables) {
 		t.Errorf("No tables found, something is terribly wrong!")
 	}
 }
 
 func TestGetKeyspaces(t *testing.T) {
-	keySpaces := GetKeyspaces("localhost", "cassandra", "cassandra")
+	keySpaces := GetKeyspaces(detailsForTests())
 	if 1 > len(keySpaces) {
 		t.Errorf("No Keyspaces found or retrieval failed.")
 	}
 }
 
 func TestGetSession(t *testing.T) {
-	expectedSession := GetSession("localhost", "cassandra", "cassandra")
+	expectedSession := GetSession(detailsForTests().Hosts, detailsForTests().Username, detailsForTests().Password)
 	defer expectedSession.Close()
 	iter := expectedSession.Query(`SELECT keyspace_name, durable_writes, replication FROM system_schema.keyspaces;`).Iter()
 	var keyspaceName string

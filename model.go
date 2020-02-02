@@ -2,10 +2,15 @@ package cassandraschema
 
 import "github.com/gocql/gocql"
 
+type CassandraCluster struct {
+	Keyspaces []CassandraKeyspace
+}
+
 type CassandraKeyspace struct {
 	Name          string
 	DurableWrites bool
 	Replication   map[string]string
+	CassandraTables []CassandraTable
 }
 
 type CassandraColumn struct {
@@ -22,5 +27,5 @@ type CassandraTable struct {
 	Id gocql.UUID
 	Name string
 	KeyspaceName string
+	CassandraColumns []CassandraColumn
 }
-

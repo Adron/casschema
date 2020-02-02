@@ -4,10 +4,50 @@ import (
 	"github.com/gocql/gocql"
 )
 
-func GetKeyspaces(hosts string, username string, password string) []CassandraKeyspace {
+type AuthDetails struct {
+	Hosts string
+	Username string
+	Password string
+}
+
+func BuildClusterSchema(details AuthDetails, ignoreList []string )CassandraCluster {
+	var cassandraCluster CassandraCluster
+
+	keySpaces := GetKeyspaces(details)
+	tables := GetTables(details)
+	columns := GetColumns(details)
+
+	for _, keySpace := range keySpaces {
+		if !Contains(ignoreList, keySpace.Name) {
+			for _, table := range tables {
+				if table.KeyspaceName == keySpace.Name {
+					for _, column := range columns {
+						if column.Keyspace == table.KeyspaceName && column.Table == table.Name {
+							table.CassandraColumns = append(table.CassandraColumns, column)
+						}
+					}
+					keySpace.CassandraTables = append(keySpace.CassandraTables, table)
+				}
+			}
+			cassandraCluster.Keyspaces = append(cassandraCluster.Keyspaces, keySpace)
+		}
+	}
+	return cassandraCluster
+}
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
+func GetKeyspaces(details AuthDetails) []CassandraKeyspace {
 	var cassieKeySpaces []CassandraKeyspace
 
-	session := GetSession(hosts, username, password)
+	session := GetSession(details.Hosts, details.Username, details.Password)
 	defer session.Close()
 
 	iter := session.Query(`SELECT keyspace_name, durable_writes, replication FROM system_schema.keyspaces;`).Iter()
@@ -28,10 +68,10 @@ func GetKeyspaces(hosts string, username string, password string) []CassandraKey
 	return cassieKeySpaces
 }
 
-func GetTables(hosts string, username string, password string) []CassandraTable {
+func GetTables(details AuthDetails) []CassandraTable {
 	var cassieTables []CassandraTable
 
-	session := GetSession(hosts, username, password)
+	session := GetSession(details.Hosts, details.Username, details.Password)
 	defer session.Close()
 
 	iter := session.Query(`SELECT id, keyspace_name, table_name FROM system_schema.tables;`).Iter()
@@ -51,10 +91,10 @@ func GetTables(hosts string, username string, password string) []CassandraTable 
 	return cassieTables
 }
 
-func GetColumns(hosts string, username string, password string) []CassandraColumn {
+func GetColumns(details AuthDetails) []CassandraColumn {
 	var cassieColumns []CassandraColumn
 
-	session := GetSession(hosts, username, password)
+	session := GetSession(details.Hosts, details.Username, details.Password)
 	defer session.Close()
 
 	iter := session.Query(`SELECT keyspace_name, table_name, column_name, clustering_order, type, kind, position FROM system_schema.columns`).Iter()
