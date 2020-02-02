@@ -29,3 +29,10 @@ type CassandraTable struct {
 	KeyspaceName string
 	CassandraColumns []CassandraColumn
 }
+
+type AuthDetails struct {
+	Hosts    string
+	Username string
+	Password string
+}
+

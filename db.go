@@ -4,12 +4,6 @@ import (
 	"github.com/gocql/gocql"
 )
 
-type AuthDetails struct {
-	Hosts string
-	Username string
-	Password string
-}
-
 func BuildClusterSchema(details AuthDetails, ignoreList []string )CassandraCluster {
 	var cassandraCluster CassandraCluster
 
@@ -33,15 +27,6 @@ func BuildClusterSchema(details AuthDetails, ignoreList []string )CassandraClust
 		}
 	}
 	return cassandraCluster
-}
-
-func Contains(a []string, x string) bool {
-	for _, n := range a {
-		if x == n {
-			return true
-		}
-	}
-	return false
 }
 
 func GetKeyspaces(details AuthDetails) []CassandraKeyspace {
